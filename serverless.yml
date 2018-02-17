@@ -1,0 +1,38 @@
+
+service: CrudBook
+
+provider:
+  name: aws
+  runtime: nodejs6.10
+  environment:
+    REGION: us-west-2
+    TABLE_NAME: Book
+  region: ${self:provider.environment.REGION}
+  iamRoleStatements:
+    - Effect: "Allow"
+      Action:
+        - dynamodb:PutItem
+        - dynamodb:Scan
+        - dynamodb:Query
+        - dynamodb:GetItem
+        - dynamodb:UpdateItem
+        - dynamodb:DeleteItem
+      Resource: "arn:aws:dynamodb:${self:provider.region}:*:${self:provider.environment.TABLE_NAME}"
+
+
+functions:
+  create:
+    handler: addBook/create.putAItem
+    events:
+      - http:
+          path: book
+          method: post
+          cors: true
+
+  delete:
+    handler: deleteBook/delete.deleteAItem
+    events:
+      http:
+        path: book/{id}
+        method: delete
+        cors: true

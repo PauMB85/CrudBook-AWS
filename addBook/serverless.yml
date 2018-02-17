@@ -1,0 +1,25 @@
+
+service: addBook
+
+provider:
+  name: aws
+  runtime: nodejs6.10
+  environment:
+    REGION: us-west-2
+    TABLE_NAME: Book
+  region: us-west-2
+  iamRoleStatements:
+    - Effect: "Allow"
+      Action:
+        - dynamodb:PutItem
+      Resource: "arn:aws:dynamodb:${self:provider.region}:*:${self:provider.environment.TABLE_NAME}"
+
+
+functions:
+  create:
+    handler: create.putAItem
+    events:
+      - http:
+          path: book
+          method: post
+          cors: true
